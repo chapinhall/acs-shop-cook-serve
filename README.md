@@ -7,6 +7,7 @@ This project has established to help us all work together--from researcher to re
 
 ### Main Features
 The main features of this project are:
+
 1. Programming scripts to facilite custom download, extraction, and selection of data for custom data sets, geographies and tables
 2. Programming scripts to generate secondary constructions from the data, e.g. calculation of % of families under the poverty line (whereas the ACS only has # of families below the poverty line, and # of families)
 3. Programming scripts and or applications to create custom tables, maps, or other visualizations of these data.
