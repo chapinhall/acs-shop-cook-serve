@@ -1,18 +1,18 @@
 acs-prep-cook-serve
 ===================
 
-Chapin Hall's tagline is "Policy research that benefits children, families, and their communities". One of the greatest public sources of data on children, families and their communities is the [American Community Survey (ACS)](https://www.census.gov/acs/www/). From the ACS 1-year data which enables comparisons from year-to-year on regional summaries and changes to the ACS 5-year data which enables geographically granular focus, this is one of the most useful resources for Chapin Hall researchers to have handy.
+Chapin Hall's tagline is "Policy research that benefits children, families, and their communities". One of the greatest public sources of data on children, families and their communities is the [American Community Survey (ACS)](https://www.census.gov/acs/www/). From the ACS 1-year data, which enables comparisons from year-to-year on regional summaries and changes, to the ACS 5-year data, which enables geographically granular focus, this is one of the most useful resources for Chapin Hall researchers to have readily usable.
 
-This project has established to help us all work together--from researcher to researcher, and project to project--so that our work cumulates and accelerates.
+This project was established to help us all work together--from researcher to researcher, and project to project--so that our work cumulates and accelerates.
 
 ### Main Features
 The main features of this project are:
 
 1. Programming scripts to facilite custom download, extraction, and selection of data for custom data sets, geographies and tables
-2. Programming scripts to generate secondary constructions from the data, e.g. calculation of % of families under the poverty line (whereas the ACS only has # of families below the poverty line, and # of families)
+2. Programming scripts to generate secondary constructions from the data, e.g. calculation of % of families under the poverty line (whereas the ACS only has only counts, e.g. # of families below the poverty line, and # of families)
 3. Programming scripts and or applications to create custom tables, maps, or other visualizations of these data.
 
-A secondary feature of this project is a preference for open source tools such as R or Python which can allow us to make this project a maximally effective open source project in the future, if desired.
+A secondary feature of this project is a preference for open source tools such as R or Python. In addition to being free and increasingly popular tools, these would allow us to make this project a maximally effective open source project in the future, if desired.
 
 ### Related Projects
 
