@@ -1,2 +1,4 @@
 *.zip
 *.txt
+*.csv
+!geofile-fields.csv
