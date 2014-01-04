@@ -1,0 +1,51 @@
+geoField,geoLabel
+FILEID ,File Identification
+STUSAB ,State Postal Abbreviation
+SUMLEVEL,Summary Level
+COMPONENT,geographic Component
+LOGRECNO,Logical Record Number
+US ,US
+REGION ,Region
+DIVISION ,Division
+STATECE ,State (Census Code)
+STATE ,State (FIPS Code)
+COUNTY ,County
+COUSUB ,County Subdivision (FIPS)
+PLACE ,Place (FIPS Code)
+TRACT ,Census Tract
+BLKGRP ,Block Group
+CONCIT ,Consolidated City
+CSA ,Combined Statistical Area
+METDIV ,Metropolitan Division
+UA ,Urban Area
+UACP ,Urban Area Central Place
+VTD ,Voting District
+ZCTA3 ,ZIP Code Tabulation Area (3-digit)
+SUBMCD ,Subbarrio (FIPS)
+SDELM ,School District (Elementary)
+SDSEC ,School District (Secondary)
+SDUNI ,School District (Unified)
+UR ,Urban/Rural
+PCI ,Principal City Indicator
+TAZ ,Traffic Analysis Zone
+UGA ,Urban Growth Area
+GEOID ,geographic Identifier
+NAME ,Area Name
+AIANHH ,American Indian Area/Alaska Native Area/Hawaiian Home Land (Census)
+AIANHHFP,American Indian Area/Alaska Native Area/Hawaiian Home Land (FIPS)
+AIHHTLI ,American Indian Trust Land/Hawaiian Home Land Indicator
+AITSCE ,American Indian Tribal Subdivision (Census)
+AITS ,American Indian Tribal Subdivision (FIPS)
+ANRC ,Alaska Native Regional Corporation (FIPS)
+CBSA ,Metropolitan and Micropolitan Statistical Area
+MACC ,Metropolitan Area Central City
+MEMI ,Metropolitan/Micropolitan Indicator Flag
+NECTA ,New England City and Town Combined Statistical Area
+CNECTA ,New England City and Town Area
+NECTADIV,New England City and Town Area Division
+CDCURR ,Current Congressional District
+SLDU ,State Legislative District Upper
+SLDL ,State Legislative District Lower
+ZCTA5 ,ZIP Code Tabulation Area (5-digit)
+PUMA5 ,Public Use Microdata Area - 5% File
+PUMA1 ,Public Use Microdata Area - 1% File
