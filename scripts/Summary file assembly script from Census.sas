@@ -1,18 +1,23 @@
 /* This file was downloaded from http://www2.census.gov/acs2012_1yr/summaryfile/UserTools/ on 1/3/2014.
 	It has been renamed (from "SF_All_Macro.sas") and modified from its original form to improve its digestibility */
-
+	
+/* NSM: My first sense from reading this file is that these are not especially sophisticated or user-friendly functions, and it wouldn't be beneficial to too
+	strictly translate these into R. The ReadDataFile macro appears to be the true workhorse here in terms of compiling data, and the AnyGeo macro has useful information regarding
+	the geofile */
+	
 /* The macros defined here are:
 	* AnyGeo - reads in and labels the geography files
 	* TableShell - based on table id argument -- obtains relevant metadata from the SequenceNumberTableNumberLookup file
 	* TablesBySeq - based on sequence number argument -- obtains relevant metadata from the SequenceNumberTableNumberLookup file
 	* ReadDataFile - based on type (which is either "e" for estimate or "m" for margin of error, geography, and sequence arguments -- 
-		Reads the corresponding file into a SAS data set. The header for these files is ... put " 	   FILEID  ='File Identification' FILETYPE='File Type' STUSAB  ='State/U.S.-Abbreviation (USPS)' CHARITER='Character Iteration' SEQUENCE='Sequence Number' LOGRECNO='Logical Record Number'
+		Reads the corresponding file into a SAS data set. The header for these files is ... put " 	   FILEID  ='File Identification' FILETYPE='File Type' STUSAB  ='State/U.S.-Abbreviation (USPS)' CHARITER='Character Iteration' SEQUENCE='Sequence Number' LOGRECNO='Logical Record Number' *** This looks like the workhorse for the real data
 		This function was written by a person who is not familiar with macro programming in SAS
 	* AllTableShells - takes no arguments, simply separates the metadata by table id. I'm surprised that this function would work, given that it calls on function "TableShells()" whereas only a "TableShell" function has been defined.
-	* AllSeqs - takes a geography argument -- calls the AnyGeofile, and then loops through all 178 sequences
-	* CallSt
-	* GetData
-	
+	* AllSeqs - takes a geography argument -- calls the AnyGeofile, and then loops through all 178 sequences. It has a fancy way of adding prefix 0s to the "seq" macro variable.
+		It then gets the meta-data for those sequences using the TabesBySeq() macro, and then uses ReadDataFile to get read all of that data
+	* CallSt - This gets the 2-digit postal code for a given state code. There's no argument--the users must directly edit the code to update the range. Based on those states, the
+		macro calls AllSeqs
+	* GetData - takes sequence, table ID, and geography (which appears to be a state). This appears to select a single table (where the corresponding sequence must be correctly specified?) and generates an output file which selects all of the relevant table elements.
 */
 
 DM "clear log";
