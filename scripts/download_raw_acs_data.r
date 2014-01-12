@@ -44,7 +44,7 @@
   myPathFileName <- dlDir %&% "Illinois_All_Geographies.zip"
   remoteDataName <- paste0("http://www2.census.gov/acs", pullYear, "_", pullSpan, "yr/summaryfile/", pullYear, "_ACSSF_By_State_All_Tables/", pullState, "_All_Geographies.zip")
 
-  tableLookup <- read.csv(url(paste0("http://www2.census.gov/acs", pullYear, "_", pullSpan, "yr/summaryfile/Sequence_Number_and_Table_Number_Lookup.txt")), header = TRUE)
+  Meta <- read.csv(url(paste0("http://www2.census.gov/acs", pullYear, "_", pullSpan, "yr/summaryfile/Sequence_Number_and_Table_Number_Lookup.txt")), header = TRUE)
   download.file(remoteDataName, myPathFileName)
   unzip(zipfile = myPathFileName) # NSM: am having problems explicitly feeding an argument to "exdir" for this function.
                                   # For now, it's using the current working directory as the default
@@ -52,12 +52,41 @@
 ### Select Tables and Merge Together
 
   # Identify the sequence number corresponding to each table that has been specified
-    # Requires use of metadata? From the tableLookup file?
-    # Colnames for the table lookup file are: "File.ID", "Table.ID", "Sequence.Number", "Line.Number", "Start.Position",
-      # "Total.Cells.in.Table", "Total.Cells.in.Sequence", "Table.Title", "Subject.Area"  
+    #myMeta <- Meta[Meta$Table.ID %in% pullTables, ]
+    Meta$ElemName <- paste0(Meta$Table.ID, "_", Meta$Line.Number)
+    seqFile.dict <- list(c("FILEID", "File Identification"),
+                         c("FILETYPE", "File Type"),
+                         c("STUSAB", "State/U.S.-Abbreviation (USPS)"),
+                         c("CHARITER", "Character Iteration"),
+                         c("SEQUENCE", "Sequence Number"),
+                         c("LOGRECNO", "Logical Record Number"))
+    seqFile.idVars <- sapply(seqFile.dict.id, function(m) m[1])
 
   # Pull those sequence files
-    # Should allow choice of E and M--or both--sets of tables
+    # XXX Should allow choice of E and M--or both--sets of tables
+    
+    for (t in pullTables) {
+      # Compile meta-data related to the table
+      t.seqNum <- myMeta[myMeta$Table.ID == t, "Sequence.Number"][1] # We can take the first element, since all of the returned sequence numbers should be the same
+        # t.seqNum_check <- names(table(myMeta[myMeta$Table.ID == t, "Sequence.Number"]))
+        # t.seqNum == t.seqNum_check
+      t.elemNames       <- Meta$ElemName[Meta$Table.ID        == t        & !is.na(Meta$Line.Number)]
+      seqFile.elemNames <- Meta$ElemName[Meta$Sequence.Number == t.seqNum & !is.na(Meta$Line.Number)]
+      mySeqColNames <- c(seqFile.idVars, seqFile.elemNames)
+        
+      # Identify the proper sequence table and pull the appropriate table columns
+      mySeq <- read.csv(paste0(dlDir, "e", pullYear, pullSpan, pullSt, sprintf("%04d", t.seqNum), "000.txt"), header=FALSE)
+      colnames(mySeq) <- mySeqColNames
+      myTable <- mySeq[, c(seqFile.idVars, t.elemNames) ]
+      
+      # Compile all requested table information
+      if (t == pullTables[1]) {
+        myResults <- myTable
+      } else {
+        myResults <- merge(x=myResults, y=myTable, by=seqFile.idVars)
+      }
+    }
+getTable("B17004")
 
   # Generate headers for the files based on standard fields, and additional fields based on meta-data
 
