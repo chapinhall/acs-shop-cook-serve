@@ -28,7 +28,7 @@
   pullYear <- "2012"
   pullSpan  <- 1
   pullState <- "Illinois"
-  pullCtny  <- c("Cook County", "Will County", "Lake County", "Kane County", "McHenry County", "DuPage County")  ## To avoid potentially non-unique pulls, "County" should be specified here
+  pullCnty  <- c("Cook County", "Will County", "Lake County", "Kane County", "McHenry County", "DuPage County")  ## To avoid potentially non-unique pulls, "County" should be specified here
   pullTract <- "*"
   pullTables <- unlist(strsplit("B01001 B01001A B01001B B01001C B01001D B01001E B01001F B01001G B01001H B01001I B08006 B08008 B08011 B08012 B08013 B15001 B15002 B17001 B12001 B12002 B12006 B17003 B17004 B17005 B19215 B19216 B14004 B14005 B05003 B23001 B23018 B23022 B24012 B24022 B24042 B24080 B24082 B24090 C24010 C24020 C24040 B11001 B11003 B11004 B13002 B13012 B13014 B13016 B17022 B23007 B23008 B25115", split= " "))
 
@@ -67,10 +67,12 @@
     
     for (t in pullTables) {
       # Compile meta-data related to the table
-      t.seqNum <- myMeta[myMeta$Table.ID == t, "Sequence.Number"][1] # We can take the first element, since all of the returned sequence numbers should be the same
+      t.seqNum <- Meta[Meta$Table.ID == t, "Sequence.Number"][1] # We can take the first element, since all of the returned sequence numbers should be the same
         # t.seqNum_check <- names(table(myMeta[myMeta$Table.ID == t, "Sequence.Number"]))
         # t.seqNum == t.seqNum_check
       t.elemNames       <- Meta$ElemName[Meta$Table.ID        == t        & !is.na(Meta$Line.Number)]
+      t.dataLabel        <- Table.Title[  Meta$Table.ID        == t        & !is.na(Meta$Line.Number)]
+        t.dataDict     <- cbind(t.elemNames, t.dataLabels)
       seqFile.elemNames <- Meta$ElemName[Meta$Sequence.Number == t.seqNum & !is.na(Meta$Line.Number)]
       mySeqColNames <- c(seqFile.idVars, seqFile.elemNames)
         
@@ -82,48 +84,36 @@
       # Compile all requested table information
       if (t == pullTables[1]) {
         myResults <- myTable
+        myDataDict <- t.dataDict
       } else {
-        myResults <- merge(x=myResults, y=myTable, by=seqFile.idVars)
+        myResults <- merge(x=myResults, y=myTable, by=c("FILEID", "FILETYPE", "STUSAB", "LOGRECNO"))
+        myDataDict <- rbind(myDataDict, t.dataDict)
       }
     }
-getTable("B17004")
 
-  # Generate headers for the files based on standard fields, and additional fields based on meta-data
 
-    # Based on the read files from SAS, the standard set of fields includes--
+# Each of the sequence files has the following left-most identifying fields
 #       FILEID  ='File Identification'
 #       FILETYPE='File Type'
 #       STUSAB  ='State/U.S.-Abbreviation (USPS)'
 #       CHARITER='Character Iteration'
 #       SEQUENCE='Sequence Number'
 #       LOGRECNO='Logical Record Number' # ... looks like the geo file has the right reference for this, which has values 1:270 in field LOGRECNO (same as the data file, except for leading zeroes)
-#       ... In the file for sequence number 31 there are 36 values. The metafile shows 30 non-NA values in the "Line.Number" field, and there are 6 standard variables.
-#       .... The problem is that metadatafile has information on *many* tables! I'd expected this to be unique! Perhaps it didn't read in properly?
-#       .... Nevermind! There really is data on multiple tables in each sequence table. What the hell?
-#       ... the "Start.Position" is the cue for the starting column (rather than character) of the table in question.
-#       ... There are large gaps in the tables which, in the data that I've downloaded, correspond to the lack of data on Puerto Rico
 
-  # Horizontally merge the files
-
-  # Use the geo file to select among the rows in the sequence tables
-
+  ### *1* Use the geo file to select among the rows in the sequence tables
+  # Need to translate counties to county codes. Either do that or, for now, ask the users to directly input county codes. ... Not sure how this will work when we're looking for data at the sub county level.
 
   geoLabels <- read.csv(paste0(rootDir, "data/prepped-data/geofile-fields.csv"), header=T) # Note--this file was created by hand from the labels in the SAS version of the data prep file. See ".../scripts/Summary file assembly script from Census.sas"
   geoFile <- read.csv(paste0(dlDir, "g", pullYear, pullSpan, tolower(pullSt), ".csv"), header=F)
   colnames(geoFile) <- geoLabels$geoField
+  
+  # Figure out which rows correspond to the counties that we want
+  
+  # Then, subset the myResults file to only these rows
 
-  # ... what is the particular syntax of sequence tables?
-  # A good way to add leading 0s is sprintf, e.g.: sprintf("%010d", 104)
-
-  a <- read.csv(paste0(dlDir, "e20121il0001000.txt"), header=F)
-  g <- read.csv(paste0(dlDir, "g20121il.csv"), header=F)
+  ### *2* Go back and make this a function
 
 
-
-# NSM: the tables come out in 178 separate files, where each in this 178 sequence is one of the summary file tables. The contents of each of those files
-#   can be found in this table: http://www2.census.gov/acs2012_1yr/summaryfile/Sequence_Number_and_Table_Number_Lookup.txt.
-# My current thought for the best way to import the data is to loop through each of the sequence tables, name, transpose or horizontally append them, and then aggregate them
-# A complementary/alternative step would be to try to adapt the SAS code that is provided under the UserTools folder -- http://www2.census.gov/acs2012_1yr/summaryfile/UserTools/SF_All_Macro.sas
 
 # Note--depending on how much we want to save space, we can delete all tables that were not requested for our use
 # Note--the filenaming convention is unique across end-years, aggregations, and sequence numbers.
