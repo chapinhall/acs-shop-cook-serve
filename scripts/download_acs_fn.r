@@ -7,43 +7,22 @@
 #########################################################################
 
 
-### Set Up Workspace
 
-  rm(list=ls())
-  "%&%" <- function(...){ paste(..., sep="")}
+
+  
   library(acs) # This package isn't (yet) used directly to download ACS data, since it generates pulls using the Census API, and 
     #   only a subset of Census data sets are available through the API. However, it has some useful helper functions to
     #   find codes for tables and geographies
-  
-  #myLocalUser <- "nmader.CHAPINHALL"
-  myLocalUser <- "nmader"
-  rootDir <- "C:/Users/nmader/Documents/GitHub/acs-shop-cook-serve/"
-  dlDir <- rootDir %&% "data/raw-downloads/"
-  saveDir <- rootDir %&% "data/prepped-data/"
-  setwd(dlDir)
 
-### Define Pulls
 
-  # NSM: we will want to convert this to a function so that users can call on this multiple times for different types of pulls, either with separate years
+getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTables) {
 
-  downloadData <- FALSE
-  pullYear <- "2012"
-  pullSpan  <- 1
-  pullState <- "Illinois"
-  pullSt <- "IL"
-  pullCounty  <- c("Cook County", "Will County", "Lake County", "Kane County", "McHenry County", "DuPage County")
-    CountyLookup <- geo.lookup(state=pullSt, county=pullCounty)
-    pullCountyCodes <- CountyLookup$county[!is.na(CountyLookup$county)]
-  pullTract <- "*"
-  pullTables <- unlist(strsplit("B01001 B01001A B01001B B01001C B01001D B01001E B01001F B01001G B01001H B01001I B08006 B08008 B08011 B08012 B08013 B15001 B15002 B17001 B12001 B12002 B12006 B17003 B17004 B17005 B19215 B19216 B14004 B14005 B05003 B23001 B23018 B23022 B24012 B24022 B24042 B24080 B24082 B24090 C24010 C24020 C24040 B11001 B11003 B11004 B13002 B13012 B13014 B13016 B17022 B23007 B23008 B25115", split= " "))
+  CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
+  pullCountyCodes <- CountyLookup$county[!is.na(CountyLookup$county)]
 
-#----------------------------
 #----------------------------
 ### Download and Extract Data
 #----------------------------
-#----------------------------
-
-  # For now, this is just a test run using a sample data set
   
   myPathFileName <- dlDir %&% "Illinois_All_Geographies.zip"
   remoteDataName <- paste0("http://www2.census.gov/acs", pullYear, "_", pullSpan, "yr/summaryfile/", pullYear, "_ACSSF_By_State_All_Tables/", pullState, "_All_Geographies.zip")
@@ -56,9 +35,7 @@
   }
 
 #----------------------------
-#----------------------------
 ### Set Up Metadata for Files
-#----------------------------
 #----------------------------
 
   # Identify the sequence number corresponding to each table that has been specified
@@ -85,9 +62,7 @@
   # Pull those sequence files
 
 #-----------------------------------
-#-----------------------------------
 ### Select Tables and Merge Together
-#-----------------------------------
 #-----------------------------------
 
     for (t in pullTables) {
@@ -123,11 +98,7 @@
 
   rownames(myResults) <- pullCounty
 
-  write.csv(myResults, paste0(saveDir, "ACS_", pullYear, "_", pullSpan, "Year_", pullSt, "_PreppedVars.csv"))
-  
-  ### *2* Go back and make this a function
+  return(myResults)
 
-# Note--should set up an option for selecting either "e"stimates, "m"argin of error, or both
-# Note--could speed things up by first checking whether the data needs to be downloaded again, and by looping through sequence rather than table. Looping by table may mean that we open up the same sequence file many times, slowing down processing.
-# Note--depending on how much we want to save space, we can delete all tables that were not requested for our use
-# Note--the filenaming convention is unique across end-years, aggregations, and sequence numbers.
+}
+
