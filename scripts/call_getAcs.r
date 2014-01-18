@@ -3,14 +3,22 @@
   rm(list=ls())
   "%&%" <- function(...){ paste(..., sep="")}
 
-  #myLocalUser <- "nmader.CHAPINHALL"
   myLocalUser <- "nmader"
-  dirRoot <- "C:/Users/nmader/Documents/GitHub/acs-shop-cook-serve/"
-  dirScripts <- dirRoot %&% "scripts/"
-  dirDl <- dirRoot %&% "data/raw-downloads/"
-  dirSave <- dirRoot %&% "data/prepped-data/"
+  dirRoot <- "C:/Users/nmader/Documents/GitHub/acs-shop-cook-serve"
+  dirScripts <- dirRoot %&% "/scripts"
+  dirDl      <- dirRoot %&% "/data/raw-downloads"
+  dirSave    <- dirRoot %&% "/data/prepped-data"
   setwd(dirDl)
-  source(dirScripts %&% "download_acs_fn.r")
+  
+  for (d in c(dirRoot, dirScripts, dirDl, dirSave)) {
+    print(file.exists(d))
+    if (!file.exists(d)) {
+      dir.create(d)
+    } else {
+      
+    }
+  }
+  source(dirScripts %&% "/download_acs_fn.r")
 
 #---------------
 ### Set up pulls
@@ -26,9 +34,9 @@
 #-----------------
 ### Call for pulls 
 #-----------------
-  myData <- getAcs(pullYear = 2012, pullSpan = 1, pullState = "Illinois", pullSt = "IL", pullCounties = myCounties, pullTables = myTables, dirDl = dirDl, downloadData = TRUE)
-  writecsv(myData, paste0(dirSave, "ACS_", pullYear, "_", pullSpan, "Year_", pullSt, "_PreppedVars.csv"))
+  myPull <- getAcs(pullYear = 2012, pullSpan = 1, pullState = "Illinois", pullSt = "IL", pullCounties = myCounties, pullTables = myTables, dirGeoLab = dirSave, dirDl = dirDl, downloadData = TRUE)
+    myData <- myPull[[1]]
+    myDict <- myPull[[2]]
+  write.csv(myData, file = paste0(dirSave, "/ACS_", myYear, "_", mySpan, "Year_", mySt, "_PreppedVars.csv"))
+  write.csv(myDict, file = paste0(dirSave, "/ACS_", myYear, "_", mySpan, "Year_", mySt, "_PreppedVars_Dict.csv"))
 
-
-  
-  
