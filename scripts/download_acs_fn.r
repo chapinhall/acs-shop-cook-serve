@@ -8,11 +8,12 @@
 library(acs) # This package isn't (yet) used directly to download ACS data, since it generates pulls using the Census API, and 
   #   only a subset of Census data sets are available through the API. However, it has some useful helper functions to
   #   find codes for tables and geographies
+library(gdata)
 
 getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTables, dirGeoLab, dirDl, downloadData) {
 
   #Test code fo if we want to run within this function
-  #pullYear = myYear; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = "B19215"; dirGeoLab = dirSave; dirDl = dirDl; downloadData = TRUE
+  #pullYear = 2007; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = "B19215"; dirGeoLab = dirSave; dirDl = dirDl; downloadData = TRUE
   
   print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, " and Counties = ", paste(pullCounties, collapse = ", ")))
   CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
@@ -23,46 +24,57 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
 #----------------------------
   
   # Get metadata
-  if (myYear >= 2010) {
+  if (pullYear >= 2010) {
     metaPath   <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Sequence_Number_and_Table_Number_Lookup.txt")
     remoteData <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/", pullYear, "_ACSSF_By_State_All_Tables/", pullState, "_All_Geographies.zip")
     geoFileExt <- "csv"
-  } else if (myYear == 2009) {
+  } else if (pullYear == 2009) {
     metaPath   <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/UserTools/merge_5_6.txt")
     remoteData <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Entire_States/Illinois.zip")
-    geoFileExt <- "csv"
-  } else if (myYear == 2008) {
+    geoFileExt <- "txt"
+  } else if (pullYear == 2008) {
     metaPath   <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/merge_5_6.xls")
     remoteData <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Illinois/")
     geoFileExt <- "txt"
-  } else if (myYear == 2007) {
+  } else if (pullYear == 2007) {
     metaPath   <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/merge_5_6_final.xls")
     remoteData <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Illinois/")
     geoFileExt <- "txt"
-  } else if (myYear == 2006) {
+  } else if (pullYear == 2006) {
     metaPath   <- paste0("acs", pullYear, "/summaryfile/merge_5_6_final.xls")
     remoteData <- paste0("acs", pullYear, "/summaryfile/Illinois/")
     geoFileExt <- "txt"
   }
   
-  Meta <- read.csv(url(paste0("http://www2.census.gov/", metaPath)), header = TRUE)
+  print(paste0("metaPath = ", metaPath))
+  metaExt <- substr(metaPath, nchar(metaPath) - 2, nchar(metaPath))
+  if (metaExt == "txt") {
+    Meta <- read.csv(url(paste0("http://www2.census.gov/", metaPath)), header = TRUE)
+  } else if (metaExt == "xls") {
+    Meta <- read.xls(paste0("http://www2.census.gov/", metaPath))
+  }
+  colnames(Meta) <- c("File.ID", "Table.ID", "Sequence.Number", "Line.Number", "Start.Position", "Total.Cells.in.Table", "Total.Cells.in.Sequence", "Table.Title", "Subject.Area")
 
   # Get data
   myFileName <- paste0("/ACS_", pullYear, "_", pullSpan, "Year_", pullSt, ".zip")
   myPathFileName <- paste0(dirDl, myFileName)
   remoteDataName <- paste0("http://www2.census.gov/", remoteData)
   if (downloadData == TRUE & !file.exists(myPathFileName)) {
-    print(paste0("Downloading data: ", myFileName))
+    print(paste0("Downloading data: ", myFileName, " from remoteDataName"))
     download.file(remoteDataName, myPathFileName)
     unzip(zipfile = myPathFileName)
       # NSM: am having problems explicitly feeding an argument to "exdir" for this function.
       # For now, it's using the current working directory as the default
   }
   
-  # Get geodata
+  # Get geodata  
   geoLabels <- read.csv(paste0(dirGeoLab, "/geofile-fields.csv"), header=T)
   # created by hand from documentation
-  geoFile <- read.csv(paste0(dirDl, "/g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), header=F)
+  if (geoFileExt == "csv") {
+    geoFile <- read.csv(paste0(dirDl, "/g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), header=F)
+  } else if (geoFileExt == "txt") {
+    geoFile <- read.delim(paste0(dirDl, "/g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), header=F)
+  }
   colnames(geoFile) <- geoLabels$geoField
   
 

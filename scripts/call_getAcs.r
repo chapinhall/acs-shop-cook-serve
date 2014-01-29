@@ -35,7 +35,7 @@
 ### Call for pulls 
 #-----------------
   
-for (myYear in 2012) { #:2012
+for (myYear in 2010:2012) {
   myPull <- getAcs(pullYear = myYear, pullSpan = 1, pullState = "Illinois", pullSt = "IL", pullCounties = myCounties, pullTables = myTables, dirGeoLab = dirSave, dirDl = dirDl, downloadData = TRUE)
     myData <- myPull[[1]]
     myDict <- myPull[[2]]
