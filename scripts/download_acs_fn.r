@@ -10,9 +10,9 @@ library(acs) # This package isn't (yet) used directly to download ACS data, sinc
   #   find codes for tables and geographies
 
 getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTables, dirGeoLab, dirDl, downloadData) {
-  
-  
-  pullYear = 2011; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = myTables; dirGeoLab = dirSave; dirDl = dirDl; downloadData = TRUE
+
+  #Test code fo if we want to run within this function
+  #pullYear = myYear; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = "B19215"; dirGeoLab = dirSave; dirDl = dirDl; downloadData = TRUE
   
   print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, " and Counties = ", paste(pullCounties, collapse = ", ")))
   CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
@@ -24,39 +24,33 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
   
   # Get metadata
   if (myYear >= 2010) {
-    metaPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Sequence_Number_and_Table_Number_Lookup.txt")
-    dataPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/", pullYear, "_ACSSF_By_State_All_Tables/", pullState, "_All_Geographies.zip")
+    metaPath   <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Sequence_Number_and_Table_Number_Lookup.txt")
+    remoteData <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/", pullYear, "_ACSSF_By_State_All_Tables/", pullState, "_All_Geographies.zip")
     geoFileExt <- "csv"
   } else if (myYear == 2009) {
-    metaPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/UserTools/merge_5_6.txt")
-    dataPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Entire_States/Illinois.zip")
+    metaPath   <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/UserTools/merge_5_6.txt")
+    remoteData <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Entire_States/Illinois.zip")
     geoFileExt <- "csv"
   } else if (myYear == 2008) {
-    metaPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/merge_5_6.xls")
-    dataPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Illinois/")
+    metaPath   <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/merge_5_6.xls")
+    remoteData <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Illinois/")
     geoFileExt <- "txt"
   } else if (myYear == 2007) {
-    metaPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/merge_5_6_final.xls")
-    dataPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Illinois/")
+    metaPath   <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/merge_5_6_final.xls")
+    remoteData <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Illinois/")
     geoFileExt <- "txt"
   } else if (myYear == 2006) {
-    metaPath <- paste0("acs", pullYear, "/summaryfile/merge_5_6_final.xls")
-    metaPath <- paste0("acs", pullYear, "/summaryfile/Illinois/")
+    metaPath   <- paste0("acs", pullYear, "/summaryfile/merge_5_6_final.xls")
+    remoteData <- paste0("acs", pullYear, "/summaryfile/Illinois/")
     geoFileExt <- "txt"
   }
   
   Meta <- read.csv(url(paste0("http://www2.census.gov/", metaPath)), header = TRUE)
 
-  # Get geodata
-  geoLabels <- read.csv(paste0(dirGeoLab, "/geofile-fields.csv"), header=T)
-    # created by hand from documentation
-  geoFile <- read.csv(paste0(dirDl, "/g", pullYear, pullSpan, tolower(pullSt), ".csv"), header=F)
-  colnames(geoFile) <- geoLabels$geoField
-  
   # Get data
   myFileName <- paste0("/ACS_", pullYear, "_", pullSpan, "Year_", pullSt, ".zip")
   myPathFileName <- paste0(dirDl, myFileName)
-  remoteDataName <- paste0("http://www2.census.gov/", remotePath)
+  remoteDataName <- paste0("http://www2.census.gov/", remoteData)
   if (downloadData == TRUE & !file.exists(myPathFileName)) {
     print(paste0("Downloading data: ", myFileName))
     download.file(remoteDataName, myPathFileName)
@@ -64,6 +58,13 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
       # NSM: am having problems explicitly feeding an argument to "exdir" for this function.
       # For now, it's using the current working directory as the default
   }
+  
+  # Get geodata
+  geoLabels <- read.csv(paste0(dirGeoLab, "/geofile-fields.csv"), header=T)
+  # created by hand from documentation
+  geoFile <- read.csv(paste0(dirDl, "/g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), header=F)
+  colnames(geoFile) <- geoLabels$geoField
+  
 
 #----------------------------
 ### Set Up Metadata for Files
@@ -92,6 +93,8 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
 
     for (t in pullTables) {
       
+      print("    Working on table " %&% t)
+      
       # Identify the sequence file we need to open
         t.seqNum <- myMeta[myMeta$Table.ID == t, "Sequence.Number"][1]
           # We can take the first element, since all of the returned sequence numbers
@@ -103,7 +106,7 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
       
       # Get meta data on the table we'll draw from the sequence file
         t.elemNames <- myMeta$elemName[myMeta$Table.ID == t]
-        t.meta <- acs.lookup(endyear = 2011, span = pullSpan, dataset = "acs", table.name = t)
+        t.meta <- acs.lookup(endyear = 2012, span = pullSpan, dataset = "acs", table.name = t)
           # using year 2011 since the ACS package hasn't been updated to expect 2012
           # and throws an error. 2011 gets us the same results in terms of table information.
         t.dataLabels <- t.meta@results$variable.name[t.meta@results$table.number == t]
@@ -113,8 +116,7 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
         t.dataDict <- cbind(t.elemNames, t.dataLabels)
               
       # Open the sequence file and apply headers
-        mySeq <- read.csv(paste0(dirDl, "/e", pullYear, pullSpan, pullSt, sprintf("%04d", t.seqNum), "000.txt"), header=FALSE)
-        print("    Working on table " %&% t)
+        mySeq <- read.csv(paste0(dirDl, "/e", pullYear, pullSpan, tolower(pullSt), sprintf("%04d", t.seqNum), "000.txt"), header=FALSE)
         colnames(mySeq) <- mySeqColNames
       
       # Pull the tables and geographies of interest
@@ -128,6 +130,7 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
           myResults <- merge(x=myResults, y=myTable, by=c("FILEID", "FILETYPE", "STUSAB", "LOGRECNO"))
           myDataDict <- rbind(myDataDict, t.dataDict)
         }
+        #print(paste0("        Completed running ", t))
     }
 
   myResults$County <- pullCounties
