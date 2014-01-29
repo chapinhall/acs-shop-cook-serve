@@ -4,7 +4,8 @@
   "%&%" <- function(...){ paste(..., sep="")}
 
   myLocalUser <- "nmader"
-  dirRoot <- "C:/Users/nmader/Documents/GitHub/acs-shop-cook-serve"
+  #dirRoot <- "C:/Users/nmader/Documents/GitHub/acs-shop-cook-serve"
+  dirRoot <- "/home/nick/GitHub/acs-shop-cook-serve"
   dirScripts <- dirRoot %&% "/scripts"
   dirDl      <- dirRoot %&% "/data/raw-downloads"
   dirSave    <- dirRoot %&% "/data/prepped-data"
@@ -23,8 +24,7 @@
 #---------------
 ### Set up pulls
 #---------------
-  downloadData <- FALSE
-  myYear <- "2012"
+  downloadData <- TRUE
   mySpan  <- 1
   myState <- "Illinois"
   mySt <- "IL"
@@ -34,9 +34,12 @@
 #-----------------
 ### Call for pulls 
 #-----------------
-  myPull <- getAcs(pullYear = 2012, pullSpan = 1, pullState = "Illinois", pullSt = "IL", pullCounties = myCounties, pullTables = myTables, dirGeoLab = dirSave, dirDl = dirDl, downloadData = TRUE)
+  
+for (myYear in 2006) { #:2012
+  myPull <- getAcs(pullYear = myYear, pullSpan = 1, pullState = "Illinois", pullSt = "IL", pullCounties = myCounties, pullTables = myTables, dirGeoLab = dirSave, dirDl = dirDl, downloadData = TRUE)
     myData <- myPull[[1]]
     myDict <- myPull[[2]]
   write.csv(myData, file = paste0(dirSave, "/ACS_", myYear, "_", mySpan, "Year_", mySt, "_PreppedVars.csv"))
   write.csv(myDict, file = paste0(dirSave, "/ACS_", myYear, "_", mySpan, "Year_", mySt, "_PreppedVars_Dict.csv"))
 
+}

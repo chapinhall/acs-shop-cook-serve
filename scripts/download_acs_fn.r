@@ -11,7 +11,10 @@ library(acs) # This package isn't (yet) used directly to download ACS data, sinc
 
 getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTables, dirGeoLab, dirDl, downloadData) {
   
-  print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, "and Counties = ", paste(pullCounties, collapse = ", ")))
+  
+  pullYear = 2011; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = myTables; dirGeoLab = dirSave; dirDl = dirDl; downloadData = TRUE
+  
+  print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, " and Counties = ", paste(pullCounties, collapse = ", ")))
   CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
   pullCountyCodes <- CountyLookup$county[!is.na(CountyLookup$county)]
 
@@ -20,8 +23,30 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
 #----------------------------
   
   # Get metadata
-  Meta <- read.csv(url(paste0("http://www2.census.gov/acs", pullYear, "_", pullSpan, "yr/summaryfile/Sequence_Number_and_Table_Number_Lookup.txt")), header = TRUE)
+  if (myYear >= 2010) {
+    metaPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Sequence_Number_and_Table_Number_Lookup.txt")
+    dataPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/", pullYear, "_ACSSF_By_State_All_Tables/", pullState, "_All_Geographies.zip")
+    geoFileExt <- "csv"
+  } else if (myYear == 2009) {
+    metaPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/UserTools/merge_5_6.txt")
+    dataPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Entire_States/Illinois.zip")
+    geoFileExt <- "csv"
+  } else if (myYear == 2008) {
+    metaPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/merge_5_6.xls")
+    dataPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Illinois/")
+    geoFileExt <- "txt"
+  } else if (myYear == 2007) {
+    metaPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/merge_5_6_final.xls")
+    dataPath <- paste0("acs", pullYear, "_", pullSpan, "yr/summaryfile/Illinois/")
+    geoFileExt <- "txt"
+  } else if (myYear == 2006) {
+    metaPath <- paste0("acs", pullYear, "/summaryfile/merge_5_6_final.xls")
+    metaPath <- paste0("acs", pullYear, "/summaryfile/Illinois/")
+    geoFileExt <- "txt"
+  }
   
+  Meta <- read.csv(url(paste0("http://www2.census.gov/", metaPath)), header = TRUE)
+
   # Get geodata
   geoLabels <- read.csv(paste0(dirGeoLab, "/geofile-fields.csv"), header=T)
     # created by hand from documentation
@@ -31,7 +56,7 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
   # Get data
   myFileName <- paste0("/ACS_", pullYear, "_", pullSpan, "Year_", pullSt, ".zip")
   myPathFileName <- paste0(dirDl, myFileName)
-  remoteDataName <- paste0("http://www2.census.gov/acs", pullYear, "_", pullSpan, "yr/summaryfile/", pullYear, "_ACSSF_By_State_All_Tables/", pullState, "_All_Geographies.zip")
+  remoteDataName <- paste0("http://www2.census.gov/", remotePath)
   if (downloadData == TRUE & !file.exists(myPathFileName)) {
     print(paste0("Downloading data: ", myFileName))
     download.file(remoteDataName, myPathFileName)
