@@ -12,8 +12,8 @@ library(gdata)
 
 getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTables, dirGeoLab, dirDl, downloadData) {
 
-  #Test code fo if we want to run within this function
-  #pullYear = 2007; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = "B19215"; dirGeoLab = dirSave; dirDl = dirDl; downloadData = TRUE
+  #Test code for if we want to run within this function
+  pullYear = 2011; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = "B19215"; dirGeoLab = dirSave; dirDl = dirDl; downloadData = TRUE # myTables
   
   print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, " and Counties = ", paste(pullCounties, collapse = ", ")))
   CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
@@ -83,12 +83,14 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
 #----------------------------
 
   # Identify the sequence number corresponding to each table that has been specified
+    Meta$Line.Number <- as.numeric(levels(Meta$Line.Number)[Meta$Line.Number])
+      # Convert Line.Number from a factor to numeric, using the levels of the factor. (The reason that Line.Number comes in as a factor is because it has non-numeric values, and read.csv handles this by creating a factor.)
     Meta$elemName <- paste0(Meta$Table.ID, "_", Meta$Line.Number)
   # Subset the metafile to only information pertaining to table columns
-    myMeta <- Meta[!is.na(Meta$Line.Number) & Meta$Line.Number %% 1 == 0, ]; rm(Meta)
+    myMeta <- Meta[!is.na(Meta$Line.Number) & Meta$Line.Number %% 1 == 0, ]; # rm(Meta)
 
     myLogRecNos <- geoFile$LOGRECNO[geoFile$COUNTY %in% pullCountyCodes & geoFile$SUMLEVEL == 50]
-      # XXX Implicitly only allows draws of county data. Need to update this.
+      # XXX Implicitly only allows draws of county data. Need to update this when going to other geographies
 
     seqFile.dict <- list(c("FILEID", "File Identification"),
                          c("FILETYPE", "File Type"),
@@ -105,7 +107,7 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
 
     for (t in pullTables) {
       
-      print("    Working on table " %&% t)
+      print("    Extracting table " %&% t)
       
       # Identify the sequence file we need to open
         t.seqNum <- myMeta[myMeta$Table.ID == t, "Sequence.Number"][1]

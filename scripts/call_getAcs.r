@@ -5,7 +5,9 @@
 
   myLocalUser <- "nmader"
   #dirRoot <- "C:/Users/nmader/Documents/GitHub/acs-shop-cook-serve"
-  dirRoot <- "/home/nick/GitHub/acs-shop-cook-serve"
+  try(setwd("/home/nick/GitHub/acs-shop-cook-serve"), silent = T)
+  try(setwd("C:/Users/nmader/Documents/GitHub/acs-shop-cook-serve"), silent = T)
+  dirRoot <- getwd()
   dirScripts <- dirRoot %&% "/scripts"
   dirDl      <- dirRoot %&% "/data/raw-downloads"
   dirSave    <- dirRoot %&% "/data/prepped-data"
@@ -35,7 +37,7 @@
 ### Call for pulls 
 #-----------------
   
-for (myYear in 2010:2012) {
+for (myYear in 2011) { # 2010:2012
   myPull <- getAcs(pullYear = myYear, pullSpan = 1, pullState = "Illinois", pullSt = "IL", pullCounties = myCounties, pullTables = myTables, dirGeoLab = dirSave, dirDl = dirDl, downloadData = TRUE)
     myData <- myPull[[1]]
     myDict <- myPull[[2]]
