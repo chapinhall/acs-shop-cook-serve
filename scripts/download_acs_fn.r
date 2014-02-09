@@ -5,15 +5,11 @@
 # Authors: Nick Mader (nmader@chapinhall.org), ...
 #
 #########################################################################
-library(acs) # This package isn't (yet) used directly to download ACS data, since it generates pulls using the Census API, and 
-  #   only a subset of Census data sets are available through the API. However, it has some useful helper functions to
-  #   find codes for tables and geographies
-library(gdata)
 
 getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTables, dirGeoLab, dirDl, downloadData) {
 
   #Test code for if we want to run within this function
-  pullYear = 2011; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = "B19215"; dirGeoLab = dirSave; dirDl = dirDl; downloadData = TRUE # myTables
+  pullYear = 2012; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = "B19215"; dirGeoLab = dirSave; dirDl = dirDl; downloadData = TRUE # myTables
   
   print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, " and Counties = ", paste(pullCounties, collapse = ", ")))
   CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
@@ -46,9 +42,10 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
     geoFileExt <- "txt"
   }
   
-  print(paste0("metaPath = ", metaPath))
   metaExt <- substr(metaPath, nchar(metaPath) - 2, nchar(metaPath))
   if (metaExt == "txt") {
+    # XXX Instead of downloading Metafiles every time, should save them to file, and check if we've previously
+    # saved them
     Meta <- read.csv(url(paste0("http://www2.census.gov/", metaPath)), header = TRUE)
   } else if (metaExt == "xls") {
     Meta <- read.xls(paste0("http://www2.census.gov/", metaPath))
@@ -73,7 +70,11 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
   if (geoFileExt == "csv") {
     geoFile <- read.csv(paste0(dirDl, "/g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), header=F)
   } else if (geoFileExt == "txt") {
-    geoFile <- read.delim(paste0(dirDl, "/g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), header=F)
+    geoFields <- read.csv(paste0(dirGeoLab, "/geofile-fields-", pullYear, ".csv"), header=T)
+    geoFile <- read.fwf(file = paste0(dirDl, "/g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), 
+                        widths = geoFields$Widths,
+                        col.names = geoFields$Col.Names)
+    #geoFile <- read.delim(paste0(dirDl, "/g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), header=F)
   }
   colnames(geoFile) <- geoLabels$geoField
   
@@ -83,7 +84,9 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
 #----------------------------
 
   # Identify the sequence number corresponding to each table that has been specified
-    Meta$Line.Number <- as.numeric(levels(Meta$Line.Number)[Meta$Line.Number])
+    if (is.factor(Meta$Line.Number)) {
+      Meta$Line.Number <- as.numeric(levels(Meta$Line.Number)[Meta$Line.Number])
+    } 
       # Convert Line.Number from a factor to numeric, using the levels of the factor. (The reason that Line.Number comes in as a factor is because it has non-numeric values, and read.csv handles this by creating a factor.)
     Meta$elemName <- paste0(Meta$Table.ID, "_", Meta$Line.Number)
   # Subset the metafile to only information pertaining to table columns
@@ -91,10 +94,13 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
 
     myLogRecNos <- geoFile$LOGRECNO[geoFile$COUNTY %in% pullCountyCodes & geoFile$SUMLEVEL == 50]
       # XXX Implicitly only allows draws of county data. Need to update this when going to other geographies
+      # To generalize this, should add arguments for the function to specify state, county, and tract (should
+      # check on whether there's more geographic nesting). Can build subsetting statement and summary level 
+      # based off of arguments that are given.
 
-    seqFile.dict <- list(c("FILEID", "File Identification"),
+    seqFile.dict <- list(c("FILEID",   "File Identification"),
                          c("FILETYPE", "File Type"),
-                         c("STUSAB", "State/U.S.-Abbreviation (USPS)"),
+                         c("STUSAB",   "State/U.S.-Abbreviation (USPS)"),
                          c("CHARITER", "Character Iteration"),
                          c("SEQUENCE", "Sequence Number"),
                          c("LOGRECNO", "Logical Record Number"))
@@ -120,14 +126,22 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
       
       # Get meta data on the table we'll draw from the sequence file
         t.elemNames <- myMeta$elemName[myMeta$Table.ID == t]
-        t.meta <- acs.lookup(endyear = 2012, span = pullSpan, dataset = "acs", table.name = t)
-          # using year 2011 since the ACS package hasn't been updated to expect 2012
-          # and throws an error. 2011 gets us the same results in terms of table information.
+        t.meta <- acs.lookup(endyear = pullYear, span = pullSpan, dataset = "acs", table.name = t)
+          # Through some testing, acs.lookup() will return results for any input endyear (using span)
+      
+          # For future use of this, note that the Census API only works for subsets of years, although I believe
+          # that the table lookups should be the same across different spans
         t.dataLabels <- t.meta@results$variable.name[t.meta@results$table.number == t]
           # Note: need to ensure subsetting to exactly rows equal to t since acs.lookup returns
           # all table matches to the search. Thus, it returns meta data for "B01001A" when searching
           # for "B01001".
-        t.dataDict <- cbind(t.elemNames, t.dataLabels)
+        if (length(t.elemNames) == length(t.dataLabels)) {
+          useLabels <- t.dataLabels
+        } else {
+          useLabels <- "Error with sourcing table element labels from acs.lookup function"
+          print(paste0("Mismatch between length of ", t, "'s elements for ", pullSpan, " yr data, with end year ", pullYear, ", and labels from acs.lookup() function"))
+        }
+        t.dataDict <- cbind(t.elemNames, useLabels)
               
       # Open the sequence file and apply headers
         mySeq <- read.csv(paste0(dirDl, "/e", pullYear, pullSpan, tolower(pullSt), sprintf("%04d", t.seqNum), "000.txt"), header=FALSE)
