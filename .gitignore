@@ -1,5 +1,5 @@
 *.zip
 *.txt
 *.csv
-!geofile-fields.csv
+!geofile-fields*.csv
 *.Rhistory
