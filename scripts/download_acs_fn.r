@@ -59,22 +59,6 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
     write.csv(Meta, paste0(dirMetaFiles, myMetaFileName))
   }
   
-  
-  #-------------#
-  # Get geodata #
-  #-------------#
-  geoLabels <- read.csv(paste0(dirMetaFiles, "/geofile-fields.csv"), header=T)
-  # created by hand from documentation
-  if (pullYear >= 2010) {
-    geoFile <- read.csv(paste0(dirDl, "g", pullYear, pullSpan, tolower(pullSt), ".csv"), header=F)
-    colnames(geoFile) <- geoLabels$geoField
-  } else {
-    geoFields <- read.csv(paste0(dirMetaFiles, "/geofile-fields-", pullYear, ".csv"), header=T)
-    geoFile <- read.fwf(file = paste0(dirDl, "g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), 
-                        widths = geoFields$Widths,
-                        col.names = geoFields$Col.Names)
-  }
-
   #----------#
   # Get data #
   #----------#
@@ -97,7 +81,21 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
     sapply(moreZips, function(x) file.remove(paste0(dirDl, x)))
   }
   
-
+  #-------------#
+  # Get geodata #
+  #-------------#
+  geoLabels <- read.csv(paste0(dirMetaFiles, "/geofile-fields.csv"), header=T)
+  # created by hand from documentation
+  if (pullYear >= 2010) {
+    geoFile <- read.csv(paste0(dirDl, "g", pullYear, pullSpan, tolower(pullSt), ".csv"), header=F)
+    colnames(geoFile) <- geoLabels$geoField
+  } else {
+    geoFields <- read.csv(paste0(dirMetaFiles, "/geofile-fields-", pullYear, ".csv"), header=T)
+    geoFile <- read.fwf(file = paste0(dirDl, "g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), 
+                        widths = geoFields$Widths,
+                        col.names = geoFields$Col.Names)
+  }
+  
 #----------------------------
 ### Set Up Metadata for Files
 #----------------------------
