@@ -7,7 +7,8 @@
   #   only a subset of Census data sets are available through the API. However, it has some useful helper functions to
   #   find codes for tables and geographies
   library(gdata)
-
+  
+  try(setwd("C:/Users/imorey/Documents/GitHub/acs-shop-cook-serve"), silent = T)
   try(setwd("/home/nick/GitHub/acs-shop-cook-serve"), silent = T)
   try(setwd("C:/Users/nmader/Documents/GitHub/acs-shop-cook-serve"), silent = T)
   dirRoot <- getwd()
