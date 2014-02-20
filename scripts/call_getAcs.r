@@ -14,6 +14,7 @@
   dirScripts <- dirRoot %&% "/scripts/"
   dirDl      <- dirRoot %&% "/data/raw-downloads/"
   dirSave    <- dirRoot %&% "/data/prepped-data/"
+  dirMetaFiles <- dirSave
   setwd(dirDl)
   
   for (d in c(dirRoot, dirScripts, dirDl, dirSave)) {

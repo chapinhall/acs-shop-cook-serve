@@ -9,8 +9,8 @@
 getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTables, dirMetaFiles, dirDl, downloadData) {
 
   #Test code for if we want to run within this function
-  #pullYear = 2008; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = myTables; dirMetaFiles = dirSave; dirDl = dirDl; downloadData = TRUE # myTables
-  
+  pullYear = 2008; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = myTables; dirMetaFiles = dirSave; dirDl = dirDl; downloadData = TRUE # myTables
+
   print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, " and Counties = ", paste(pullCounties, collapse = ", ")))
   CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
   pullCountyCodes <- CountyLookup$county[!is.na(CountyLookup$county)]
