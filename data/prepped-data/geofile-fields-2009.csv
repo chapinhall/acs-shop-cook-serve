@@ -1,51 +1,51 @@
-Col.Names,Starting.Position,Widths
-FILEID,1,6
-STUSAB,7,2
-SUMLEVEL,9,3
-COMPONENT,12,2
-LOGRECNO,14,7
-US,21,1
-REGION,22,1
-DIVISION,23,1
-STATECE,24,2
-STATE,26,2
-COUNTY,28,3
-COUSUB,31,5
-PLACE,36,5
-BLANK,41,6
-BLANK,47,1
-BLANK,48,5
-AIANHH,53,4
-AIANHHFP,57,5
-BLANK,62,1
-BLANK,63,3
-BLANK,66,5
-ANRC,71,5
-CBSA,76,5
-CSA,81,3
-METDIV,84,5
-MACC,89,1
-MEMI,90,1
-NECTA,91,5
-CNECTA,96,3
-NECTADIV,99,5
-UA,104,5
-BLANK,109,5
-CDCURR,114,2
-BLANK,116,3
-BLANK,119,3
-BLANK,122,6
-BLANK,128,3
-BLANK,131,5
-SUBMCD,136,5
-SDELM,141,5
-SDSEC,146,5
-SDUNI,151,5
-UR,156,1
-PCI,157,1
-BLANK,158,6
-BLANK,164,5
-PUMA5,169,5
-BLANK,174,5
-GEOID,179,40
-NAME,219,200
+Col.Names,Description,Starting.Position,Widths
+FILEID,Always equal to ACS Summary File identification,1,6
+STUSAB,State Postal Abbreviation,7,2
+SUMLEVEL,Summary Level,9,3
+COMPONENT,Geographic Component,12,2
+LOGRECNO,Logical Record Number,14,7
+US,US,21,1
+REGION,Census Region,22,1
+DIVISION,Census Division,23,1
+STATECE,State (Census Code),24,2
+STATE,State(FIPS Code),26,2
+COUNTY,County of current residence,28,3
+COUSUB,County Subdivision (FIPS),31,5
+PLACE,Place (FIPS Code),36,5
+BLANK,,41,6
+BLANK,,47,1
+BLANK,,48,5
+AIANHH,American Indian Area/Alaska Native Area/Hawaiian Home Land (Census),53,4
+AIANHHFP,American Indian Area/Alaska Native Area/Hawaiian Home Land (FIPS),57,5
+BLANK,,62,1
+BLANK,,63,3
+BLANK,,66,5
+ANRC,Alaska Native Regional Corporation (FIPS),71,5
+CBSA,Metropolitan and Micropolitan Statistical Area,76,5
+CSA,Combined Statistical Area,81,3
+METDIV,Metropolitan Division,84,5
+MACC,Metropolitan Area Central City,89,1
+MEMI,Metropolitan/Micropolitan Indicator Flag,90,1
+NECTA,New England City and Town Area,91,5
+CNECTA,New England City and Town Combined Statistical Area,96,3
+NECTADIV,New England City and Town Area Division,99,5
+UA,Urban Area,104,5
+BLANK,,109,5
+CDCURR,Current Congressional District,114,2
+BLANK,,116,3
+BLANK,,119,3
+BLANK,,122,6
+BLANK,,128,3
+BLANK,,131,5
+SUBMCD,,136,5
+SDELM,School District (Elementary),141,5
+SDSEC,School District (Secondary),146,5
+SDUNI,School District (Unified),151,5
+UR,Urban/Rural,156,1
+PCI,Principal City Indicator,157,1
+BLANK,,158,6
+BLANK,,164,5
+PUMA5,Public Use Microdata Area - 5% File,169,5
+BLANK,Urban Growth Area,174,5
+GEOID,Geographic Identifier,179,40
+NAME,Area Name,219,200

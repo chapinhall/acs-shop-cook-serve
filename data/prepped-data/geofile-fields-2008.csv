@@ -1,52 +1,52 @@
-Col.Names,Starting.Position,Widths
-FILEID,1,6
-STUSAB,7,2
-SUMLEVEL,9,3
-COMPONENT,12,2
-LOGRECNO,14,7
-US,21,1
-REGION,22,1
-DIVISION,23,1
-STATECE,24,2
-STATE,26,2
-COUNTY,28,3
-COUSUB,31,5
-PLACE,36,5
-TRACT,41,6
-BLKGRP,47,1
-CONCIT,48,5
-AIANHH,53,4
-AIANHHFP,57,5
-AIHHTLI,62,1
-AITSCE,63,3
-AITS,66,5
-ANRC,71,5
-CBSA,76,5
-CSA,81,3
-METDIV,84,5
-MACC,89,1
-MEMI,90,1
-NECTA,91,5
-CNECTA,96,3
-NECTADIV,99,5
-UA,104,5
-UACP,109,5
-CDCURR,114,2
-SLDU,116,3
-SLDL,119,3
-VTD,122,6
-ZCTA3,128,3
-ZCTA5,131,5
-SUBMCD,136,2
-SDELM,138,5
-SDSEC,143,5
-SDUNI,148,5
-UR,153,1
-PCI,154,1
-TAZ,155,6
-UGA,161,5
-PUMA5,166,5
-PUMA1,171,5
-GEOID,176,40
-NAME,216,200
-RESERVED,418,50
+Col.Names,Description,Starting.Position,Widths
+FILEID,Always equal to ACS Summary File identification,1,6
+STUSAB,State Postal Abbreviation,7,2
+SUMLEVEL,Summary Level,9,3
+COMPONENT,Geographic Component,12,2
+LOGRECNO,Logical Record Number,14,7
+US,US,21,1
+REGION,Census Region,22,1
+DIVISION,Census Division,23,1
+STATECE,State (Census Code),24,2
+STATE,State(FIPS Code),26,2
+COUNTY,County of current residence,28,3
+COUSUB,County Subdivision (FIPS),31,5
+PLACE,Place (FIPS Code),36,5
+TRACT,Census Tract,41,6
+BLKGRP,Block Group,47,1
+CONCIT,Consolidated City,48,5
+AIANHH,American Indian Area/Alaska Native Area/Hawaiian Home Land (Census),53,4
+AIANHHFP,American Indian Area/Alaska Native Area/Hawaiian Home Land (FIPS),57,5
+AIHHTLI,American Indian Trust Land/Hawaiian Home Land Indicator,62,1
+AITSCE,American Indian Tribal Subdivision (Census),63,3
+AITS,American Indian Tribal Subdivision FIPS),66,5
+ANRC,Alaska Native Regional Corporation (FIPS),71,5
+CBSA,Metropolitan and Micropolitan Statistical Area,76,5
+CSA,Combined Statistical Area,81,3
+METDIV,Metropolitan Division,84,5
+MACC,Metropolitan Area Central City,89,1
+MEMI,Metropolitan/Micropolitan Indicator Flag,90,1
+NECTA,New England City and Town Area,91,5
+CNECTA,New England City and Town Combined Statistical Area,96,3
+NECTADIV,New England City and Town Area Division,99,5
+UA,Urban Area,104,5
+UACP,Urban Area Central Place,109,5
+CDCURR,Current Congressional District,114,2
+SLDU,State Legislative District Upper,116,3
+SLDL,State Legislative District Lower,119,3
+VTD,Voting District,122,6
+ZCTA3,ZIP Code Tabulation Area (3-digit),128,3
+ZCTA5,ZIP Code Tabulation Area (5-digit),131,5
+SUBMCD,Subbarrio (FIPS),136,2
+SDELM,School District (Elementary),138,5
+SDSEC,School District (Secondary),143,5
+SDUNI,School District (Unified),148,5
+UR,Urban/Rural,153,1
+PCI,Principal City Indicator,154,1
+TAZ,Traffic Analysis Zone,155,6
+UGA,Urban Growth Area,161,5
+PUMA5,Public Use Microdata Area - 5% File,166,5
+PUMA1,Public Use Microdata Area - 1% File,171,5
+GEOID,Geographic Identifier,176,40
+NAME,Area Name,216,200
+RESERVED,For Future needs,418,50

@@ -1,0 +1,54 @@
+Col.Names,Description,Starting.Position,Widths,SummaryLevel
+FILEID,Always equal to ACS Summary File identification,6,1,All Summary Levels
+STUSAB,State Postal Abbreviation,2,7,All Summary Levels
+SUMLEVEL,Summary Level,3,9,All Summary Levels
+COMPONENT,Geographic Component,2,12,All Summary Levels
+LOGRECNO,Logical Record Number,7,14,All Summary Levels
+US,US,1,21,010
+REGION,Census Region,1,22,020
+DIVISION,Census Division,1,23,030
+STATECE,State (Census Code),2,24,Blank for all summary levels
+STATE,State (FIPS Code),2,26,"040, 050, 060, 160, 230, 312, 352, 500, 795, 950, 960, 970"
+COUNTY,County of current residence,3,28,"050, 060"
+COUSUB,County Subdivision (FIPS),5,31,060
+PLACE,Place (FIPS Code),5,36,"160, 312, 352"
+TRACT,Census Tract,6,41,Not applicable for this release
+BLKGRP,Block Group,1,47,Not applicable for this release
+CONCIT,Consolidated City,5,48,Not applicable for this release
+AIANHH,American Indian Area/Alaska Native Area/ Hawaiian Home Land (Census),4,53,250
+AIANHHFP,American Indian Area/Alaska Native Area/ Hawaiian Home Land (FIPS),5,57,Not applicable for this release
+AIHHTLI,American Indian Trust Land/ Hawaiian Home Land Indicator,1,62,Not applicable for this release
+AITSCE,American Indian Tribal Subdivision (Census),3,63,Not applicable for this release
+AITS,American Indian Tribal Subdivision (FIPS),5,66,Not applicable for this release
+ANRC,Alaska Native Regional Corporation (FIPS),5,71,230
+CBSA,Metropolitan and Micropolitan Statistical Area,5,76,"310, 312, 314"
+CSA,Combined Statistical Area,3,81,330
+METDIV,Metropolitan Statistical Area-Metropolitan Division,5,84,314
+MACC,Metropolitan Area Central City,1,89,Blank for all summary levels
+MEMI,Metropolitan/Micropolitan Indicator Flag,1,90,"010, 020, 030, 040, 314"
+NECTA,New England City and Town Area,5,91,"335, 350, 352"
+CNECTA,New England City and Town Combined Statistical Area,3,96,335
+NECTADIV,New England City and Town Area Division,5,99,355
+UA,Urban Area,5,104,400
+BLANK,0,5,109,Reserved for future use
+CDCURR,Current Congressional District ***,2,114,500
+SLDU,State Legislative District Upper,3,116,Not applicable for the release
+SLDL,State Legislative District Lower,3,119,Not applicable for the release
+BLANK,0,6,122,Reserved for future use
+BLANK,0,3,128,Reserved for future use
+ZCTA5,5-digit ZIP Code Tabulation Area,5,131,Not applicable for the release
+SUBMCD,Subminor Civil Division (FIPS),5,136,Not applicable for the release
+SDELM,State-School District (Elementary),5,141,950
+SDSEC,State-School District (Secondary),5,146,960
+SDUNI,State-School District (Unified),5,151,970
+UR,Urban/Rural,1,156,"010, 020, 030, 040"
+PCI,Principal City Indicator,1,157,"010, 020, 030, 040, 312, 352"
+BLANK,0,6,158,Reserved for future use
+BLANK,0,5,164,Reserved for future use
+PUMA5,Public Use Microdata Area – 5% File,5,169,795
+BLANK,0,5,174,Reserved for future use
+GEOID,Geographic Identifier,40,179,All Summary Levels
+NAME,Area Name,1000,219,All Summary Levels
+BTTR,Tribal Tract,6,1219,Not applicable for the release
+BTBG,Tribal Block Group,1,1225,Not applicable for the release
+BLANK,0,43,1226,Reserved for future use

@@ -6,10 +6,10 @@
 #
 #########################################################################
 
-getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTables, dirMetaFiles, dirDl, downloadData) {
+getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullGeos, pullTables, dirMetaFiles, dirDl, downloadData) {
 
   #Test code for if we want to run within this function
-  pullYear = 2008; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullGeos = myGeos; pullTables = myTables; dirMetaFiles = dirSave; dirDl = dirDl; downloadData = TRUE # myTables
+  pullYear = 2009; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullGeos = myGeos; pullTables = myTables; dirMetaFiles = dirSave; dirDl = dirDl; downloadData = TRUE # myTables
 
   print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, " and Geographies = ", paste(pullGeos[,1], collapse = ", ")))
   #CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
@@ -84,13 +84,14 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
   #-------------#
   # Get geodata #
   #-------------#
-  geoLabels <- read.csv(paste0(dirMetaFiles, "/geofile-fields.csv"), header=T)
+  #geoLabels <- read.csv(paste0(dirMetaFiles, "/geofile-fields.csv"), header=T)
   # created by hand from documentation
+  geoFields <- read.csv(paste0(dirMetaFiles, "/geofile-fields-", pullYear, ".csv"), header=T)
   if (pullYear >= 2010) {
     geoFile <- read.csv(paste0(dirDl, "g", pullYear, pullSpan, tolower(pullSt), ".csv"), header=F)
-    colnames(geoFile) <- geoLabels$geoField
+    colnames(geoFile) <- geoFields$Col.Names
   } else {
-    geoFields <- read.csv(paste0(dirMetaFiles, "/geofile-fields-", pullYear, ".csv"), header=T)
+    
     geoFile <- read.fwf(file = paste0(dirDl, "g", pullYear, pullSpan, tolower(pullSt), ".", geoFileExt), 
                         widths = geoFields$Widths,
                         col.names = geoFields$Col.Names)
@@ -113,12 +114,7 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
       geoFile$LOGRECNO[grepl(place, geoFile$NAME) & geoFile$SUMLEVEL == lvl]
     }
     myLogRecNos <- mapply(getLogRecNos, pullGeos$Place, pullGeos$SumLevel)
-      myLogRecNos.County <- geoFile$LOGRECNO[geoFile$COUNTY %in% pullCountyCodes & geoFile$SUMLEVEL == 50]
-    }
-      # XXX Implicitly only allows draws of county data. Need to update this when going to other geographies
-      # To generalize this, should add arguments for the function to specify state, county, and tract (should
-      # check on whether there's more geographic nesting). Can build subsetting statement and summary level 
-      # based off of arguments that are given.
+    myGeoNames <- geoFile$NAME[geoFile$LOGRECNO %in% myLogRecNos]
 
     seqFile.dict <- list(c("FILEID",   "File Identification"),
                          c("FILETYPE", "File Type"),
@@ -183,7 +179,7 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
         #print(paste0("        Completed running ", t))
     }
 
-  myResults$County <- pullCounties
+  myResults$Geo <- myGeoNames
   colnames(myDataDict) <- c("Table Element", "Element Label")
 
   return(list(myResults, myDataDict))
