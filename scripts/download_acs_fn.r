@@ -9,11 +9,11 @@
 getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTables, dirMetaFiles, dirDl, downloadData) {
 
   #Test code for if we want to run within this function
-  pullYear = 2008; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullCounties = myCounties; pullTables = myTables; dirMetaFiles = dirSave; dirDl = dirDl; downloadData = TRUE # myTables
+  pullYear = 2008; pullSpan = 1; pullState = "Illinois"; pullSt = "IL"; pullGeos = myGeos; pullTables = myTables; dirMetaFiles = dirSave; dirDl = dirDl; downloadData = TRUE # myTables
 
-  print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, " and Counties = ", paste(pullCounties, collapse = ", ")))
-  CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
-  pullCountyCodes <- CountyLookup$county[!is.na(CountyLookup$county)]
+  print(paste0("Downloading and extracting ACS ", pullYear, " ", pullSpan, " year data for ", "state =  ", pullState, " and Geographies = ", paste(pullGeos[,1], collapse = ", ")))
+  #CountyLookup <- geo.lookup(state=pullSt, county=pullCounties)
+  #pullCountyCodes <- CountyLookup$county[!is.na(CountyLookup$county)]
 
 #----------------------------
 ### Download and Extract Data
@@ -109,7 +109,12 @@ getAcs <- function(pullYear, pullSpan, pullState, pullSt, pullCounties, pullTabl
   # Subset the metafile to only information pertaining to table columns
     myMeta <- Meta[!is.na(Meta$Line.Number) & Meta$Line.Number %% 1 == 0, ]; # rm(Meta)
 
-    myLogRecNos <- geoFile$LOGRECNO[geoFile$COUNTY %in% pullCountyCodes & geoFile$SUMLEVEL == 50]
+    getLogRecNos <- function(place, lvl) {
+      geoFile$LOGRECNO[grepl(place, geoFile$NAME) & geoFile$SUMLEVEL == lvl]
+    }
+    myLogRecNos <- mapply(getLogRecNos, pullGeos$Place, pullGeos$SumLevel)
+      myLogRecNos.County <- geoFile$LOGRECNO[geoFile$COUNTY %in% pullCountyCodes & geoFile$SUMLEVEL == 50]
+    }
       # XXX Implicitly only allows draws of county data. Need to update this when going to other geographies
       # To generalize this, should add arguments for the function to specify state, county, and tract (should
       # check on whether there's more geographic nesting). Can build subsetting statement and summary level 
