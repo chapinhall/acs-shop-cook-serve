@@ -15,7 +15,7 @@ myKey <- as.character(keyFile[1,1])
 api.key.install(myKey, file = "key.rda")
 
 # Example searchers for keywords
-  acs.lookup(endyear = 2011, span = 5, dataset = "acs", keyword = c("poverty", "workers"))
+  acs.lookup(endyear = 2012, span = 5, dataset = "acs", keyword = c("poverty", "workers"))
   acs.lookup(endyear = 2011, span = 5, dataset = "acs", keyword = c("poverty", "force"))
 
 # Defining our pull
